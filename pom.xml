@@ -14,7 +14,7 @@
 	<name>diaryApp</name>
 	<description>Project for a Diary Application using SQL</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>16</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
