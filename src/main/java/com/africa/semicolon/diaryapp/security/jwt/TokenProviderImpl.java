@@ -5,6 +5,7 @@ import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,15 +29,17 @@ public class TokenProviderImpl implements TokenProvider {
     //TODO move jwt props to configServer
 
 //    @Value("${jwt.signing.key}")
-    private final String SIGNING_KEY = System.getenv("SIGNING_KEY");
+
 //
 //    @Value("${jwt.authorities.key}")
-    public String AUTHORITIES_KEY = System.getenv("AUTHORITIES_KEY");
-
+    private static String AUTHORITIES_KEY = System.getenv("AUTHORITIES_KEY");
+    private static String SIGNING_KEY = System.getenv("SIGNING_KEY");
     private static final Long TOKEN_VALIDITY_PERIOD = (long) (24 * 10 * 3600);
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private ConfigurableEnvironment env;
 
     @Override
     public String getUsernameFromJWTToken(String token) {
