@@ -32,14 +32,10 @@ public class TokenProviderImpl implements TokenProvider {
 
 //
 //    @Value("${jwt.authorities.key}")
-    private static String AUTHORITIES_KEY = System.getenv("AUTHORITIES_KEY");
-    private static String SIGNING_KEY = System.getenv("SIGNING_KEY");
+    private static String AUTHORITIES_KEY = "ROLE_";
+    private static String SIGNING_KEY = "gfhfhfhfhfhfhfhfh";
     private static final Long TOKEN_VALIDITY_PERIOD = (long) (24 * 10 * 3600);
 
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ConfigurableEnvironment env;
 
     @Override
     public String getUsernameFromJWTToken(String token) {
@@ -105,10 +101,10 @@ public class TokenProviderImpl implements TokenProvider {
         final Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
         final Claims claims = claimsJws.getBody();
 
-        final Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
-//                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-//                        .map(SimpleGrantedAuthority::new)
-//                        .collect(Collectors.toList());
+        final Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toSet());
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 }

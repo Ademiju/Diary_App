@@ -10,6 +10,7 @@ import javax.annotation.processing.Generated;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -37,6 +38,20 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY,
             orphanRemoval = true)
     private Set<Diary> diaries;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch =FetchType.EAGER )
+    private Set<Role> roles;
+
+    public User(String email, String password, RoleType roleType) {
+        this(email,password);
+        if(roles == null){
+            roles = new HashSet<>();
+        }
+        roles.add(new Role(roleType));
+
+    }
+
+
 
     @Override
     public String toString() {

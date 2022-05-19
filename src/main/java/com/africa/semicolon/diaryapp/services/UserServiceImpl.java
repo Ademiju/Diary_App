@@ -1,6 +1,7 @@
 package com.africa.semicolon.diaryapp.services;
 
 import com.africa.semicolon.diaryapp.datas.models.Diary;
+import com.africa.semicolon.diaryapp.datas.models.Role;
 import com.africa.semicolon.diaryapp.datas.models.User;
 import com.africa.semicolon.diaryapp.datas.repositories.UserRepository;
 import com.africa.semicolon.diaryapp.dtos.requests.UserRequest;
@@ -12,6 +13,8 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +23,10 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor
@@ -70,6 +76,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(email).orElseThrow(()-> new UserNotFoundException("User not found"));
-        return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getEmail(),
+                user.getPassword(), getAuthorities(user.getRoles()));
+    }
+
+    private Collection<? extends GrantedAuthority> getAuthorities(Set<Role> roles) {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getRoleType().name()))
+                .collect(Collectors.toSet());
     }
 }

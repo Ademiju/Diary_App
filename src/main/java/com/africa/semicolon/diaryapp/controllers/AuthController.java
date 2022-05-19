@@ -5,6 +5,7 @@ import com.africa.semicolon.diaryapp.dtos.requests.LoginRequest;
 import com.africa.semicolon.diaryapp.dtos.responses.AuthToken;
 import com.africa.semicolon.diaryapp.security.jwt.TokenProvider;
 import com.africa.semicolon.diaryapp.services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 @RequestMapping ("/api/v2/diaryapp/auth")
 public class AuthController {
     @Autowired
@@ -27,10 +29,13 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        log.info("here");
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                         loginRequest.getPassword())
         );
+        log.info("Authenticate --> {}", authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final String token = tokenProvider.generateJWTToken(authentication);
         User user = userService.findUserByEmail(loginRequest.getEmail());
